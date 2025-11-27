@@ -1,9 +1,10 @@
 import express from "express";
 import cors from "cors";
-import { MongoClient } from "mongodb";
-import dotenv from "dotenv";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { MongoClient, ObjectId } from "mongodb";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -11,48 +12,66 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGODB_URI;
+const DB_NAME = "afterschool";
+
 app.use(cors());
 app.use(express.json());
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-const client = new MongoClient(process.env.MONGODB_URI);
-let lessonsCollection;
+let lessons = [];
 
-async function connectDB() {
-  await client.connect();
-  const db = client.db("afterschool");
-  lessonsCollection = db.collection("lessons");
-  console.log("MongoDB connected");
-}
+MongoClient.connect(MONGO_URI)
+  .then((client) => {
+    const db = client.db(DB_NAME);
+    const lessonsCollection = db.collection("lessons");
 
-app.get("/lessons", async (req, res) => {
-  const lessons = await lessonsCollection.find({}).toArray();
-  res.json(lessons);
-});
+    app.get("/", (req, res) => {
+      res.send("Afterschool Backend is Running ✅");
+    });
 
-app.post("/order", async (req, res) => {
-  const cart = req.body.cart;
+    app.get("/lessons", async (req, res) => {
+      const data = await lessonsCollection.find().toArray();
+      lessons = data;
+      res.json(data);
+    });
 
-  if (!Array.isArray(cart)) return res.status(400).json({ message: "Invalid cart" });
+    app.post("/order", async (req, res) => {
+      const { cart } = req.body;
+      if (!cart || !Array.isArray(cart)) {
+        return res.status(400).json({ message: "Invalid cart data." });
+      }
 
-  for (let item of cart) {
-    const lesson = await lessonsCollection.findOne({ _id: item._id });
+      let failed = false;
 
-    if (!lesson || lesson.space < item.quantity) {
-      return res.status(400).json({ message: "Not enough space" });
-    }
-  }
+      for (const item of cart) {
+        const lesson = await lessonsCollection.findOne({ _id: new ObjectId(item._id) });
 
-  for (let item of cart) {
-    await lessonsCollection.updateOne(
-      { _id: item._id },
-      { $inc: { space: -item.quantity } }
-    );
-  }
+        if (!lesson || lesson.spaces < item.quantity) {
+          failed = true;
+          break;
+        }
+      }
 
-  res.json({ message: "Booking successful" });
-});
+      if (failed) {
+        return res.status(400).json({ message: "Booking failed. Not enough space available." });
+      }
 
-app.listen(3000, () => console.log("Server running on port 3000"));
+      for (const item of cart) {
+        await lessonsCollection.updateOne(
+          { _id: new ObjectId(item._id) },
+          { $inc: { spaces: -item.quantity } }
+        );
+      }
 
-connectDB();
+      res.json({ message: "Booking successful." });
+    });
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("DB connection error:", error);
+  });
