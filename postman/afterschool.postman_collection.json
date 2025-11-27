@@ -1,0 +1,91 @@
+{
+  "info": {
+    "name": "Afterschool API",
+    "_postman_id": "e2c7f04d-8c9e-4dcb-9a1e-1bdcef7b2c7a",
+    "description": "Postman collection for Fullstack Coursework",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get All Lessons",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://afterschool-backend-b7i9.onrender.com/lessons",
+          "protocol": "https",
+          "host": [
+            "afterschool-backend-b7i9",
+            "onrender",
+            "com"
+          ],
+          "path": ["lessons"]
+        }
+      }
+    },
+    {
+      "name": "Search Lessons",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://afterschool-backend-b7i9.onrender.com/search?q=math",
+          "protocol": "https",
+          "host": [
+            "afterschool-backend-b7i9",
+            "onrender",
+            "com"
+          ],
+          "path": ["search"],
+          "query": [{ "key": "q", "value": "math" }]
+        }
+      }
+    },
+    {
+      "name": "Submit Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"John Doe\",\n  \"phone\": \"52525252\",\n  \"items\": [\n    {\n      \"_id\": \"REPLACE_WITH_LESSON_ID\",\n      \"subject\": \"Math\",\n      \"price\": 800,\n      \"space\": 4\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "https://afterschool-backend-b7i9.onrender.com/orders",
+          "protocol": "https",
+          "host": [
+            "afterschool-backend-b7i9",
+            "onrender",
+            "com"
+          ],
+          "path": ["orders"]
+        }
+      }
+    },
+    {
+      "name": "Update Lesson Space",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"space\": 3\n}"
+        },
+        "url": {
+          "raw": "https://afterschool-backend-b7i9.onrender.com/lessons/REPLACE_WITH_LESSON_ID",
+          "protocol": "https",
+          "host": [
+            "afterschool-backend-b7i9",
+            "onrender",
+            "com"
+          ],
+          "path": ["lessons", "REPLACE_WITH_LESSON_ID"]
+        }
+      }
+    }
+  ]
+}
