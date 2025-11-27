@@ -1,24 +1,50 @@
-# Afterschool Lessons Booking App — Backend
+# Afterschool App – Backend
 
-This is the backend for the Afterschool Booking Web App. It serves lesson data and handles checkout orders using a Node.js and Express.js server connected to MongoDB.
+This is the backend API for the Afterschool Lessons Booking application. It handles lesson retrieval, cart booking, and updating available spaces using a MongoDB database.
+
+## Live Deployment
+
+- API Endpoint: https://afterschool-backend-final.onrender.com
 
 ## Features
 
-- REST API for lessons and booking
-- Stores and updates lesson data in MongoDB
-- CORS-enabled for frontend access
-- Fully stateless and file-driven (no sessions)
+- GET /lessons – Fetch all lessons
+- POST /order – Process booking from cart, update lesson spaces
 
 ## Technologies Used
 
 - Node.js
 - Express.js
-- MongoDB (no Mongoose)
-- dotenv
+- MongoDB (via official native driver)
+- Render (Backend Hosting)
+- MongoDB Atlas (Cloud Database)
 
-## Setup Instructions
+## Project Structure
 
-1. Install dependencies:
+backend/
+├── server.js
+├── package.json
+├── .env
+├── lessons_export.json
+├── README.md
 
-   ```bash
-   npm install
+
+## Setup Notes
+
+- MongoDB used without Mongoose
+- Lesson data is stored in MongoDB and synced with `lessons_export.json`
+- `.env` file should include:
+MONGODB_URI=mongodb+srv://alvinmuinde:Flacko19@clustercw1.dpdevvv.mongodb.net/afterschool
+PORT=3000
+
+
+## API Usage
+
+- `GET /lessons` — returns all lessons from the database
+- `POST /order` — processes booking if enough spaces are available
+
+## Assignment Compliance
+
+- No Mongoose used
+- Complies with instructions for not using additional frameworks
+- Built from scratch using core Node.js and Express.js
